@@ -1,0 +1,24 @@
+{
+  "name": "grammar-trainer-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/grammar-trainer-api/src",
+  "projectType": "application",
+  "targets": {
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "grammar-trainer-api:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "grammar-trainer-api:build:development"
+        },
+        "production": {
+          "buildTarget": "grammar-trainer-api:build:production"
+        }
+      }
+    }
+  },
+  "tags": []
+}
