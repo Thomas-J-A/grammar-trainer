@@ -43,7 +43,17 @@
 - ⚙️ **Customizable Syntax:** Tailor the learning experience with options for different tenses, themes, and sentence length.
 - 💾 **Save The Best:** Build a history of your most amusing - and syntactically correct - sentences.
 
-<!-- ## 📐 Wireframes -->
+## 📐 Wireframes
+
+- These sketches represent the views and functionalities of the app.
+- I focused on keeping the UI simple which facilitates a smooth transition from mobile to desktop.
+- I will decide on a final theme by playing around with the RadixUI playground feature.
+- I didn't use Figma as I find it quicker to iterate on ideas with pen and paper.
+- Photos were taken on a kitchen counter. Do with this information what you will. 😅
+
+|                        About and History pages                        |                        Root page and modals                        |
+| :-------------------------------------------------------------------: | :----------------------------------------------------------------: |
+| ![Wireframe of About and History pages](/docs/images/wireframe0.jpeg) | ![Wireframe of root page and modals](/docs/images/wireframe1.jpeg) |
 
 ## 🛠️ Toolkit
 
