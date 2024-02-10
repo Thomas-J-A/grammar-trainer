@@ -80,11 +80,19 @@ I considered using another programming language such as Python but there are sti
 6. Add E2E tests with Cypress
 7. Deploy with CD pipeline
 
+### Future features/enhancements
+
+- Add more complex tenses to options (past perfect, present continuous, etc)
+- Continue to refine the logic behind possible next word
+- Take keywords from sentence and use as a prompt for GenAI to make an associated image - add "Generate Image" button after completing sentence
+
 ## 🧗 Anticipated Challenges
 
-- Writing the complex logic required when determining which parts of speech can follow the current word. I will need an NLP library combined with custom logic.
+- Writing the logic required when determining which parts of speech can follow the current word; verb transitivity, for example, might be difficult to establish without knowing the whole context. I will need an NLP library combined with custom logic.
 
 - Maintaining a consistent project structure to manage complexity if I scale it in the future (adding more features, etc) - this is why I will use a dedicated monorepo tool and opinionated frameworks like Nest.js and Next.js. This will require learning lots of new tools/concepts.
+
+- The ceaseless hit to my ego from getting constant user feedback as I develop. This will, however, improve usability.
 
 ## 🔄 Improvements I Wish To Make From [My Last Project](https://github.com/Thomas-J-A/diet-accountability-app)
 
