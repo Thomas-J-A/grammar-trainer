@@ -43,7 +43,17 @@
 - ⚙️ **Customizable Syntax:** Tailor the learning experience with options for different tenses, themes, and sentence length.
 - 💾 **Save The Best:** Build a history of your most amusing - and syntactically correct - sentences.
 
-<!-- ## 📐 Wireframes -->
+## 📐 Wireframes
+
+- These sketches represent the views and functionalities of the app.
+- I focused on keeping the UI simple which facilitates a smooth transition from mobile to desktop.
+- I will decide on a final theme by playing around with the RadixUI playground feature.
+- I didn't use Figma as I find it quicker to iterate on ideas with pen and paper.
+- Photos were taken on a kitchen counter. Do with this information what you will. 😅
+
+|                        About and History pages                        |                        Root page and modals                        |
+| :-------------------------------------------------------------------: | :----------------------------------------------------------------: |
+| ![Wireframe of About and History pages](/docs/images/wireframe0.jpeg) | ![Wireframe of root page and modals](/docs/images/wireframe1.jpeg) |
 
 ## 🛠️ Toolkit
 
@@ -70,11 +80,19 @@ I considered using another programming language such as Python but there are sti
 6. Add E2E tests with Cypress
 7. Deploy with CD pipeline
 
+### Future features/enhancements
+
+- Add more complex tenses to options (past perfect, present continuous, etc)
+- Continue to refine the logic behind possible next word
+- Take keywords from sentence and use as a prompt for GenAI to make an associated image - add "Generate Image" button after completing sentence
+
 ## 🧗 Anticipated Challenges
 
-- Writing the complex logic required when determining which parts of speech can follow the current word. I will need an NLP library combined with custom logic.
+- Writing the logic required when determining which parts of speech can follow the current word; verb transitivity, for example, might be difficult to establish without knowing the whole context. I will need an NLP library combined with custom logic.
 
 - Maintaining a consistent project structure to manage complexity if I scale it in the future (adding more features, etc) - this is why I will use a dedicated monorepo tool and opinionated frameworks like Nest.js and Next.js. This will require learning lots of new tools/concepts.
+
+- The ceaseless hit to my ego from getting constant user feedback as I develop. This will, however, improve usability.
 
 ## 🔄 Improvements I Wish To Make From [My Last Project](https://github.com/Thomas-J-A/diet-accountability-app)
 
