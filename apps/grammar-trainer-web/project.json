@@ -1,0 +1,8 @@
+{
+  "name": "grammar-trainer-web",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/grammar-trainer-web",
+  "projectType": "application",
+  "targets": {},
+  "tags": []
+}
