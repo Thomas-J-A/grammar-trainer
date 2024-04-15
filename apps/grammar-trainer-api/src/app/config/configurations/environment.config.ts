@@ -1,5 +1,5 @@
 export default () => ({
   environment: {
-    NODE_ENV: process.env.NODE_ENV || 'development',
+    mode: process.env.NODE_ENV || 'development',
   },
 });
