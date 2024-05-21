@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres
+    container_name: grammar-trainer-postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secret_password
+      - POSTGRES_DB=development
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: grammar-trainer-pgadmin
+    restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=tomaspbury@icloud.com
+      - PGADMIN_DEFAULT_PASSWORD=nobodyshouldseethis1
+    ports:
+      - 80:80
+    depends_on:
+      - db
+
+volumes:
+  postgres:
