@@ -6,6 +6,7 @@ import {
 } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import session from 'express-session';
@@ -41,9 +42,10 @@ const configModuleOptions: ConfigModuleOptions = {
 @Module({
   imports: [
     ConfigModule.forRoot(configModuleOptions),
-    UsersModule,
-    AuthModule,
+    PrismaModule,
     RedisModule,
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -92,4 +94,7 @@ export class AppModule implements NestModule {
  *
  * NOTE: express-session updates the expires value of the cookie on each request to ensure sessions remain active
  * as long as the user is active (internal resetMaxAge method)
+ *
+ * NOTE: to prevent session fixation, upon logging in successfully the session id is replaced (passport calls session.regenerate?).
+ * It is also replaced in the client's browser.
  */

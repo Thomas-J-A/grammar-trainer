@@ -18,6 +18,20 @@
           "buildTarget": "grammar-trainer-api:build:production"
         }
       }
+    },
+    "migrate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx prisma migrate dev",
+        "cwd": "apps/grammar-trainer-api"
+      }
+    },
+    "gen-client": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx prisma generate",
+        "cwd": "apps/grammar-trainer-api"
+      }
     }
   },
   "tags": []

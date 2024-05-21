@@ -12,9 +12,14 @@ export class SessionSerializer extends PassportSerializer {
     done(null, user.id);
   }
 
-  deserializeUser(userId: string, done: (err: Error, payload: any) => void) {
-    const user = this.usersService.findUserById(Number(userId));
+  async deserializeUser(
+    userId: string,
+    done: (err: Error, payload: any) => void
+  ) {
+    // Look for user with serialized id in database
+    const user = await this.usersService.findUserById(Number(userId));
 
+    // Throw an error if no user with serialized id found in database
     if (!user) {
       return done(
         new Error(
@@ -24,6 +29,9 @@ export class SessionSerializer extends PassportSerializer {
       );
     }
 
-    done(null, user);
+    // Sanitize user before adding to request object
+    const sanitizedUser = this.usersService.sanitizeUser(user);
+
+    done(null, sanitizedUser);
   }
 }

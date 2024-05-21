@@ -1,37 +1,22 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { Prisma, User } from '@prisma/client';
 
-export interface User {
-  id: number;
-  email: string;
-  password: string;
-}
+// NOTE: Repository layer concerns: data access (data retrieval, storage, and query execution)
 
 @Injectable()
 export class UsersRepository {
-  // Temporary user data (refactor to interact with db via prisma client)
-  private users: User[] = [
-    { id: 1, email: 'foo@icloud.com', password: 'changeme' },
-    { id: 2, email: 'bar@gmail.com', password: 'guess' },
-  ];
+  constructor(private readonly prisma: PrismaService) {}
 
-  async createUser(email: string, password: string) {
-    // TODO: hash password, save to db
-    const newUser = {
-      id: Math.random(),
-      email,
-      password,
-    };
-
-    this.users = [...this.users, newUser];
-
-    return newUser;
+  async createUser(data: Prisma.UserCreateInput): Promise<User> {
+    return this.prisma.user.create({ data });
   }
 
   async findUserByEmail(email: string): Promise<User | null> {
-    return this.users.find((user) => user.email === email) ?? null;
+    return this.prisma.user.findUnique({ where: { email } });
   }
 
   async findUserById(id: number): Promise<User | null> {
-    return this.users.find((user) => user.id === id) ?? null;
+    return this.prisma.user.findUnique({ where: { id } });
   }
 }
