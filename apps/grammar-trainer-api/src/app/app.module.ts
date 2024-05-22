@@ -19,6 +19,7 @@ import environmentConfig from './config/configurations/environment.config';
 import httpConfig from './config/configurations/http.config';
 import sessionConfig from './config/configurations/session.config';
 import cacheConfig from './config/configurations/cache.config';
+import databaseConfig from './config/configurations/database.config';
 import { validate } from './config/validations/validate';
 
 // Options to configure ConfigModule
@@ -36,7 +37,13 @@ const configModuleOptions: ConfigModuleOptions = {
   envFilePath: `.env.${process.env.NODE_ENV}`,
 
   // Extend configuration beyond just env vars, and modify format with nesting for intuitive access
-  load: [environmentConfig, httpConfig, sessionConfig, cacheConfig],
+  load: [
+    environmentConfig,
+    httpConfig,
+    sessionConfig,
+    cacheConfig,
+    databaseConfig,
+  ],
 };
 
 @Module({
