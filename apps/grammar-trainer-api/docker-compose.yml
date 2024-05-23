@@ -24,5 +24,12 @@ services:
     depends_on:
       - db
 
+  redis:
+    image: redis
+    container_name: grammar-trainer-redis
+    restart: always
+    ports:
+      - 6379:6379
+
 volumes:
   postgres:

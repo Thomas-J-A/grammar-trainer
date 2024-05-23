@@ -26,10 +26,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         } catch (e) {
           console.log(`Unable to connect to Redis: ${e.code}`);
 
-          /**
-           * Exit process since a successful Redis connection
-           * is essential to correct functioning of app
-           */
+          // Exit process since a successful Redis connection
+          // is essential to correct functioning of app
           process.exit(1);
         }
       },
