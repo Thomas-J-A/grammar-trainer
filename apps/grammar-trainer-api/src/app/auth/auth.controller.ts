@@ -14,6 +14,9 @@ import { AuthenticatedGuard } from '../auth/guards/authenticated.guard';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { AuthService } from './auth.service';
 
+/**
+ * Controller for authentication-related routes.
+ */
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

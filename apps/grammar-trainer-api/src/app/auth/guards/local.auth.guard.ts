@@ -3,8 +3,10 @@ import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 
 /**
- * AuthGuard is a special guard which kicks off the PassportJS authentication flow
- * It calls verify cb (validate method), adds user to request object, and establishes session
+ * Guard for implementing PassportJS authentication.
+ *
+ * AuthGuard is a special guard which kicks off the PassportJS authentication flow.
+ * It calls verify cb (validate method), adds user to request object, and establishes session.
  */
 Injectable();
 export class LocalAuthGuard extends AuthGuard('local') {

@@ -63,7 +63,9 @@ export class AppModule implements NestModule {
     private readonly configService: ConfigService
   ) {}
 
-  // Apply session/passport middleware to all routes
+  /**
+   * Apply session/passport middleware to all routes
+   */
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(

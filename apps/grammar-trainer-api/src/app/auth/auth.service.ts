@@ -7,10 +7,21 @@ import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { SafeUserResponseDto } from '../users/dto/safe-user-response.dto';
 
+/**
+ * Service for handling authenication.
+ * Provides methods for registering users, checking submitted credentials, and verifying passwords.
+ */
 @Injectable()
 export class AuthService {
   constructor(private readonly usersService: UsersService) {}
 
+  /**
+   * Register a new user to the app.
+   *
+   * @param {string} email - The user's email address.
+   * @param {string} password - The user's password.
+   * @returns {Promise<SafeUserResponseDto>} A promise that resolves to the created user.
+   */
   async registerUser(
     email: string,
     password: string
@@ -28,7 +39,14 @@ export class AuthService {
     return this.usersService.sanitizeUser(newUser);
   }
 
-  // Validate submitted credentials against those stored in db
+  /**
+   * Validate submitted credentials against those stored in db.
+   * Used by PassportJS when authenticating a user during login.
+   *
+   * @param {string} email - The user's email address.
+   * @param {string} password - The user's password.
+   * @returns {Promise<SafeUserResponseDto>} A promise that resolves to a user.
+   */
   async validateUser(
     email: string,
     password: string
@@ -51,7 +69,13 @@ export class AuthService {
     return this.usersService.sanitizeUser(user);
   }
 
-  // Verify that submitted password matches the hash stored in db
+  /**
+   * Verify that submitted password matches the hash stored in db.
+   *
+   * @param {string} plainTextPassword - The submitted password.
+   * @param {string} hashedPassword - The hashed password stored in the db.
+   * @returns {Promise<boolean>} A promise that resolves to a boolean value.
+   */
   private async verifyPassword(
     plainTextPassword: string,
     hashedPassword: string
