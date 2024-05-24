@@ -10,7 +10,7 @@ import { DatabaseVariables } from './database.validation';
 /**
  * Validates the loaded environment variables.
  *
- * @param {Record<string, unknown>} config The process.env object.
+ * @param {Record<string, unknown>} config - The process.env object.
  * @returns {Record<string, unknown>} An object populated by the validated environment variables.
  */
 export const validate = (config: Record<string, unknown>) => {

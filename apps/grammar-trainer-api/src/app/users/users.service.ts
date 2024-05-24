@@ -7,10 +7,21 @@ import { SafeUserResponseDto } from './dto/safe-user-response.dto';
 
 // NOTE: Service layer concerns: business logic
 
+/**
+ * Service for managing users.
+ * Provides methods for creating a user, retrieving one by email or id, hashing a password, and sanitizing a user.
+ */
 @Injectable()
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
+  /**
+   * Create and store a new user instance in the database.
+   *
+   * @param {string} email - The user's email address.
+   * @param {string} password - The user's password.
+   * @returns {Promise<User>} A promise that resolves to the created user.
+   */
   async createUser(email: string, password: string): Promise<User> {
     // Hash password
     const hashedPassword = await this.hashPassword(password);
@@ -20,10 +31,22 @@ export class UsersService {
     return await this.usersRepository.createUser(newUserData);
   }
 
+  /**
+   * Find user in database with corresponding email address.
+   *
+   * @param {string} email - The email to search by in database.
+   * @returns {Promise<User | null>} A promise that resolves to a user or null if not found.
+   */
   async findUserByEmail(email: string): Promise<User | null> {
     return await this.usersRepository.findUserByEmail(email);
   }
 
+  /**
+   * Find user in database with corresponding user id.
+   *
+   * @param {number} id - The id to search by in database.
+   * @returns {Promise<User | null>} A promise that resolves to a user or null if not found.
+   */
   async findUserById(id: number): Promise<User | null> {
     return await this.usersRepository.findUserById(id);
   }
@@ -31,8 +54,8 @@ export class UsersService {
   /**
    * Encrypt user-submitted password for secure database storage.
    *
-   * @param password
-   * @returns {string} A hashed password.
+   * @param {string} password - The plaintext password to hash.
+   * @returns {Promise<string>} A promise that resolves to a hashed password.
    */
   private async hashPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt();
@@ -40,11 +63,10 @@ export class UsersService {
   }
 
   /**
-   * Transform a database user object into a sanitized version suitable for returning in API response.
-   *
+   * Transform a database user instance into a sanitized version suitable for returning in API response.
    * The transformed object contains no credentials.
    *
-   * @param user
+   * @param {User} user - A complete user instance with credentials.
    * @returns {SafeUserResponseDto} A user object without credentials.
    */
   sanitizeUser(user: User): SafeUserResponseDto {
