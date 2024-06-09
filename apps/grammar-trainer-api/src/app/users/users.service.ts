@@ -9,7 +9,7 @@ import { SafeUserResponseDto } from './dto/safe-user-response.dto';
 
 /**
  * Service for managing users.
- * Provides methods for creating a user, retrieving one by email or id, hashing a password, and sanitizing a user.
+ * Provides methods for creating a user, retrieving one by email or id, hashing and resetting a password, and sanitizing a user.
  */
 @Injectable()
 export class UsersService {
@@ -52,12 +52,23 @@ export class UsersService {
   }
 
   /**
+   * Update the user's password in the database.
+   *
+   * @param {number} id - The user's id.
+   * @param {string} newPassword - The new password for the account.
+   * @returns {Promise<User>} A promise that resolves to a user.
+   */
+  async resetPassword(id: number, newPassword: string): Promise<User> {
+    return await this.usersRepository.resetPassword(id, newPassword);
+  }
+
+  /**
    * Encrypt user-submitted password for secure database storage.
    *
    * @param {string} password - The plaintext password to hash.
    * @returns {Promise<string>} A promise that resolves to a hashed password.
    */
-  private async hashPassword(password: string): Promise<string> {
+  async hashPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt();
     return bcrypt.hash(password, salt);
   }

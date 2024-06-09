@@ -6,6 +6,7 @@ import { HttpVariables } from './http.validation';
 import { SessionVariables } from './session.validation';
 import { CacheVariables } from './cache.validation';
 import { DatabaseVariables } from './database.validation';
+import { MailVariables } from './mail.validation';
 
 /**
  * Validates the loaded environment variables.
@@ -39,6 +40,11 @@ export const validate = (config: Record<string, unknown>) => {
     enableImplicitConversion: true,
   });
 
+  const mailVars = plainToInstance(MailVariables, config, {
+    excludeExtraneousValues: true,
+    enableImplicitConversion: true,
+  });
+
   // Validate all envs
   const errors = [
     ...validateSync(environmentVars, {
@@ -61,6 +67,10 @@ export const validate = (config: Record<string, unknown>) => {
       skipMissingProperties: false,
       stopAtFirstError: true,
     }),
+    ...validateSync(mailVars, {
+      skipMissingProperties: false,
+      stopAtFirstError: true,
+    }),
   ];
 
   if (errors.length > 0) {
@@ -74,6 +84,7 @@ export const validate = (config: Record<string, unknown>) => {
     ...sessionVars,
     ...cacheVars,
     ...databaseVars,
+    ...mailVars,
   };
 
   return allVars;

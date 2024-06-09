@@ -13,6 +13,8 @@ import { LocalAuthGuard } from '../auth/guards/local.auth.guard';
 import { AuthenticatedGuard } from '../auth/guards/authenticated.guard';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { AuthService } from './auth.service';
+import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 /**
  * Controller for authentication-related routes.
@@ -69,5 +71,30 @@ export class AuthController {
     request.session.cookie.maxAge = 0;
 
     return { message: 'Logout successful', statusCode: HttpStatus.OK };
+  }
+
+  // POST /request-password-reset
+  @Post('/request-password-reset')
+  async requestPasswordReset(@Body() data: RequestPasswordResetDto) {
+    const { message } = await this.authService.requestPasswordReset(data.email);
+
+    return {
+      message,
+      statusCode: HttpStatus.OK,
+    };
+  }
+
+  // POST /reset-password
+  @Post('/reset-password')
+  async resetPassword(@Body() data: ResetPasswordDto) {
+    const result = await this.authService.resetPassword(
+      data.token,
+      data.newPassword
+    );
+
+    return {
+      message: result.message,
+      statusCode: HttpStatus.OK,
+    };
   }
 }

@@ -1,6 +1,5 @@
 import {
   IsNotEmpty,
-  IsEmail,
   IsString,
   IsStrongPassword,
   IsStrongPasswordOptions,
@@ -14,13 +13,13 @@ const passwordOptions: IsStrongPasswordOptions = {
   minUppercase: 1,
 };
 
-export class RegisterUserDto {
-  @IsEmail()
+export class ResetPasswordDto {
+  @IsString()
   @IsNotEmpty()
-  email: string;
+  token: string;
 
   @IsString()
   @IsNotEmpty()
   @IsStrongPassword(passwordOptions)
-  password: string;
+  newPassword: string;
 }
