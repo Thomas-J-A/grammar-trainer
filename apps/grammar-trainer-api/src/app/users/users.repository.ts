@@ -6,7 +6,7 @@ import { Prisma, User } from '@prisma/client';
 
 /**
  * Repository for managing users in database.
- * Provides methods to create a user and retrieve one by email or ID.
+ * Provides methods to create a user, retrieve one by email or ID, and to reset a password.
  */
 @Injectable()
 export class UsersRepository {
@@ -40,5 +40,19 @@ export class UsersRepository {
    */
   async findUserById(id: number): Promise<User | null> {
     return this.prisma.user.findUnique({ where: { id } });
+  }
+
+  /**
+   * Update the user's password in the database.
+   *
+   * @param {number} id - The user's id.
+   * @param {string} newPassword - The new password for the account.
+   * @returns {Promise<User>} A promise that resolves to a user.
+   */
+  async resetPassword(id: number, newPassword: string): Promise<User> {
+    return this.prisma.user.update({
+      where: { id },
+      data: { password_hash: newPassword },
+    });
   }
 }

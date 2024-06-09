@@ -9,6 +9,7 @@ import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { PasswordResetTokensModule } from './password-reset-tokens/password-reset-tokens.module';
 import session from 'express-session';
 import RedisStore from 'connect-redis';
 import { RedisClientType } from 'redis';
@@ -20,6 +21,7 @@ import httpConfig from './config/configurations/http.config';
 import sessionConfig from './config/configurations/session.config';
 import cacheConfig from './config/configurations/cache.config';
 import databaseConfig from './config/configurations/database.config';
+import mailConfig from './config/configurations/mail.config';
 import { validate } from './config/validations/validate';
 
 // Options to configure ConfigModule
@@ -43,6 +45,7 @@ const configModuleOptions: ConfigModuleOptions = {
     sessionConfig,
     cacheConfig,
     databaseConfig,
+    mailConfig,
   ],
 };
 
@@ -53,6 +56,7 @@ const configModuleOptions: ConfigModuleOptions = {
     RedisModule,
     AuthModule,
     UsersModule,
+    PasswordResetTokensModule,
   ],
   controllers: [AppController],
   providers: [AppService],
