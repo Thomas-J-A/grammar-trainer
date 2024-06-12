@@ -25,10 +25,10 @@ export class AuthController {
 
   // POST /signup
   @Post('/signup')
-  async registerUser(@Body() user: RegisterUserDto) {
+  async registerUser(@Body() data: RegisterUserDto) {
     const newUser = await this.authService.registerUser(
-      user.email,
-      user.password
+      data.email,
+      data.password
     );
 
     return {
