@@ -1,9 +1,9 @@
 import { Expose } from 'class-transformer';
 
 /**
- * User details without the credentials.
+ * User details without the credentials to send back to client.
  */
-export class SafeUserResponseDto {
+export class SafeResponseUserDto {
   @Expose()
   id: number;
 

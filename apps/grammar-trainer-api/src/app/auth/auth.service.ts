@@ -3,6 +3,7 @@ import {
   UnauthorizedException,
   ConflictException,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { addHours } from 'date-fns';
@@ -10,7 +11,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { UsersService } from '../users/users.service';
 import { MailerService } from '../mailer/mailer.service';
 import { PasswordResetTokensService } from '../password-reset-tokens/password-reset-tokens.service';
-import { SafeUserResponseDto } from '../users/dto/safe-user-response.dto';
+import { SafeResponseUserDto } from '../users/dto/safe-response-user.dto';
+import { RequestObjectUserDto } from '../users/dto/request-object-user.dto';
+import { MAX_FAILED_LOGIN_ATTEMPTS, LOCKOUT_DURATION } from './auth.constants';
 
 /**
  * Service for handling authenication.
@@ -29,12 +32,12 @@ export class AuthService {
    *
    * @param {string} email - The user's email address.
    * @param {string} password - The user's password.
-   * @returns {Promise<SafeUserResponseDto>} A promise that resolves to the created user.
+   * @returns {Promise<SafeResponseUserDto>} A promise that resolves to the created user.
    */
   async registerUser(
     email: string,
     password: string
-  ): Promise<SafeUserResponseDto> {
+  ): Promise<SafeResponseUserDto> {
     // Verify that a user with same email doesn't already exist
     const existingUser = await this.usersService.findUserByEmail(email);
     if (existingUser) {
@@ -45,21 +48,42 @@ export class AuthService {
     const newUser = await this.usersService.createUser(email, password);
 
     // Sanitize and return user
-    return this.usersService.sanitizeUser(newUser);
+    return this.usersService.sanitizeUserForResponse(newUser);
+  }
+
+  /**
+   * Sanitize user ready for response.
+   *
+   * @param {RequestObjectUserDto} user - The req.user object.
+   * @returns {SafeResponseUserDto} A sanitized user object.
+   */
+  logIn(user: RequestObjectUserDto): SafeResponseUserDto {
+    return this.usersService.sanitizeUserForResponse(user);
+  }
+
+  /**
+   * Sanitize user ready for response.
+   *
+   * @param {RequestObjectUserDto} user - The req.user object.
+   * @returns {SafeResponseUserDto} A sanitized user object.
+   */
+  getProfile(user: RequestObjectUserDto): SafeResponseUserDto {
+    return this.usersService.sanitizeUserForResponse(user);
   }
 
   /**
    * Validate submitted credentials against those stored in db.
+   *
    * Used by PassportJS when authenticating a user during login.
    *
    * @param {string} email - The user's email address.
    * @param {string} password - The user's password.
-   * @returns {Promise<SafeUserResponseDto>} A promise that resolves to a user.
+   * @returns {Promise<RequestObjectUserDto>} A promise that resolves to a user.
    */
   async validateUser(
     email: string,
     password: string
-  ): Promise<SafeUserResponseDto> {
+  ): Promise<RequestObjectUserDto> {
     // Fetch user from db
     const user = await this.usersService.findUserByEmail(email);
 
@@ -68,14 +92,39 @@ export class AuthService {
       throw new UnauthorizedException('Incorrect email or password');
     }
 
+    // Ensure user is not locked out
+    if (user.lockoutExpiry && new Date() < user.lockoutExpiry) {
+      throw new ForbiddenException('Account is locked. Try again later');
+    }
+
     // Verify submitted password matches hashed password in db
     const isMatch = await this.verifyPassword(password, user.password_hash);
     if (!isMatch) {
+      await this.handleFailedLogin(user.id);
       throw new UnauthorizedException('Incorrect email or password');
     }
 
+    // Reset failed login properties in user's db record when login is successful
+    await this.usersService.resetFailedAttempts(user.id);
+
     // Sanitize and return user
-    return this.usersService.sanitizeUser(user);
+    return this.usersService.sanitizeUserForRequestObject(user);
+  }
+
+  /**
+   * Update user's failed login attempts and lockout status in db record.
+   *
+   * @param {number} userId - The id of the user attempting to log in.
+   */
+  async handleFailedLogin(userId: number): Promise<void> {
+    // Increment the number of failed attempts registered with the user
+    const updatedUser = await this.usersService.incrementFailedAttempts(userId);
+
+    if (updatedUser.failedLoginAttempts >= MAX_FAILED_LOGIN_ATTEMPTS) {
+      // Lock the user's account if they have too many failed attempts
+      await this.usersService.lockAccount(userId, LOCKOUT_DURATION);
+      throw new ForbiddenException('Account is locked. Try again later');
+    }
   }
 
   /**

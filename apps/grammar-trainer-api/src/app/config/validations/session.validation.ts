@@ -22,6 +22,12 @@ export class SessionVariables {
   @Expose()
   @IsOptional()
   @IsBoolean()
+  @Transform(({ obj }) => obj.SESSION_ROLLING === 'true')
+  SESSION_ROLLING?: boolean;
+
+  @Expose()
+  @IsOptional()
+  @IsBoolean()
   @Transform(({ obj }) => obj.SESSION_RESAVE === 'true')
   SESSION_RESAVE?: boolean;
 

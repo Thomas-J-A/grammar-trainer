@@ -3,7 +3,8 @@ import * as bcrypt from 'bcrypt';
 import { User } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
 import { UsersRepository } from './users.repository';
-import { SafeUserResponseDto } from './dto/safe-user-response.dto';
+import { SafeResponseUserDto } from './dto/safe-response-user.dto';
+import { RequestObjectUserDto } from './dto/request-object-user.dto';
 
 // NOTE: Service layer concerns: business logic
 
@@ -63,6 +64,40 @@ export class UsersService {
   }
 
   /**
+   * Increment count of failed login attempts in database record.
+   *
+   * @param {number} userId - The id of the user attempting to login.
+   * @returns {Promise<User>} A promise that resolves to a user.
+   */
+  async incrementFailedAttempts(userId: number): Promise<User> {
+    return await this.usersRepository.incrementFailedAttempts(userId);
+  }
+
+  /**
+   * Reset the fields related to failed login attempts in database record.
+   *
+   * @param {number} userId - The id of the user who successfully authenticates.
+   * @returns {Promise<User>} A promise that resolves to a user.
+   */
+  async resetFailedAttempts(userId: number): Promise<User> {
+    return await this.usersRepository.resetFailedAttempts(userId);
+  }
+
+  /**
+   * Update the lockout status of a user.
+   *
+   * @param {number} userId - The id of the user who is locked out.
+   * @param {number} lockoutDuration - The length of time a user should be locked out for.
+   * @returns {Promise<User>} A promise that resolves to a user.
+   */
+  async lockAccount(userId: number, lockoutDuration: number): Promise<User> {
+    // Create an expiry date in the future
+    const lockoutExpiry = new Date(Date.now() + lockoutDuration);
+
+    return await this.usersRepository.lockAccount(userId, lockoutExpiry);
+  }
+
+  /**
    * Encrypt user-submitted password for secure database storage.
    *
    * @param {string} password - The plaintext password to hash.
@@ -74,14 +109,29 @@ export class UsersService {
   }
 
   /**
-   * Transform a database user instance into a sanitized version suitable for returning in API response.
-   * The transformed object contains no credentials.
+   * Transform a database user instance into a sanitized version suitable for adding to Express.Request object.
    *
    * @param {User} user - A complete user instance with credentials.
-   * @returns {SafeUserResponseDto} A user object without credentials.
+   * @returns {RequestObjectUserDto} A sanitized user object that contains everything server requires to process request.
    */
-  sanitizeUser(user: User): SafeUserResponseDto {
-    return plainToInstance(SafeUserResponseDto, user, {
+  sanitizeUserForRequestObject(user: User): RequestObjectUserDto {
+    return plainToInstance(RequestObjectUserDto, user, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  /**
+   * Transform a database User or req.user instance into a sanitized version suitable for returning in API response.
+   *
+   * The transformed object contains no sensitive fields.
+   *
+   * @param {User | RequestObjectUserDto} user - A database User instance or request object user instance.
+   * @returns {SafeResponseUserDto} A sanitized user object without sensitive fields.
+   */
+  sanitizeUserForResponse(
+    user: User | RequestObjectUserDto
+  ): SafeResponseUserDto {
+    return plainToInstance(SafeResponseUserDto, user, {
       excludeExtraneousValues: true,
     });
   }

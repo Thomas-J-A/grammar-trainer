@@ -11,10 +11,12 @@ import {
 import { Request } from 'express';
 import { LocalAuthGuard } from '../auth/guards/local.auth.guard';
 import { AuthenticatedGuard } from '../auth/guards/authenticated.guard';
+import { AccountLockoutGuard } from './guards/account-lockout.guard';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { AuthService } from './auth.service';
 import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { RequestObjectUserDto } from '../users/dto/request-object-user.dto';
 
 /**
  * Controller for authentication-related routes.
@@ -42,22 +44,32 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   logIn(@Req() request: Request) {
+    const user = this.authService.logIn(request.user as RequestObjectUserDto);
+
     return {
       message: 'Login successful',
       statusCode: HttpStatus.OK,
-      user: request.user,
+      user,
     };
   }
 
   // GET /profile
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(AuthenticatedGuard, AccountLockoutGuard)
   @Get('/profile')
   getProfile(@Req() request: Request) {
-    return request.user;
+    const user = this.authService.getProfile(
+      request.user as RequestObjectUserDto
+    );
+
+    return {
+      message: 'Fetch successful',
+      statusCode: HttpStatus.OK,
+      user,
+    };
   }
 
   // POST /logout
-  @UseGuards(AuthenticatedGuard)
+  @UseGuards(AuthenticatedGuard, AccountLockoutGuard)
   @Post('/logout')
   logOut(@Req() request: Request) {
     // Remove session from server

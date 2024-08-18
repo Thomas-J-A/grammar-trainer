@@ -46,7 +46,7 @@ export class SessionSerializer extends PassportSerializer {
     }
 
     // Sanitize user before adding to request object
-    const sanitizedUser = this.usersService.sanitizeUser(user);
+    const sanitizedUser = this.usersService.sanitizeUserForRequestObject(user);
 
     done(null, sanitizedUser);
   }
