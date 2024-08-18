@@ -20,7 +20,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
    *
    * @param {string} email - The submitted email address.
    * @param {string} password - The submitted password.
-   * @returns {Promise} A promise that resolves to a user object without credentials.
+   * @returns {Promise} A promise that resolves to a user object with some sensitive fields removed.
    */
   async validate(email: string, password: string) {
     const user = await this.authService.validateUser(email, password);

@@ -55,4 +55,44 @@ export class UsersRepository {
       data: { password_hash: newPassword },
     });
   }
+
+  /**
+   * Increment count of failed login attempts in database record.
+   *
+   * @param {number} userId - The id of the user attempting to login.
+   * @returns {Promise<User>} A promise that resolves to a user.
+   */
+  async incrementFailedAttempts(userId: number): Promise<User> {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { failedLoginAttempts: { increment: 1 } },
+    });
+  }
+
+  /**
+   * Reset the fields related to failed login attempts in database record.
+   *
+   * @param {number} userId - The id of the user who successfully authenticates.
+   * @returns {Promise<User>} A promise that resolves to a user.
+   */
+  async resetFailedAttempts(userId: number): Promise<User> {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { failedLoginAttempts: 0, lockoutExpiry: null },
+    });
+  }
+
+  /**
+   * Update the lockout status of a user.
+   *
+   * @param {number} userId - The id of the user who is locked out.
+   * @param {Date} lockoutExpiry - The date when an account is unlocked.
+   * @returns {Promise<User>} A promise that resolves to a user.
+   */
+  async lockAccount(userId: number, lockoutExpiry: Date): Promise<User> {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { lockoutExpiry },
+    });
+  }
 }

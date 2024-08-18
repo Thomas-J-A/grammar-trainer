@@ -25,6 +25,7 @@ import cacheConfig from './config/configurations/cache.config';
 import databaseConfig from './config/configurations/database.config';
 import mailConfig from './config/configurations/mail.config';
 import { validate } from './config/validations/validate';
+import { MaxSessionExpirationMiddleware } from './global-middleware/max-session-expiration.middleware';
 
 // Options to configure ConfigModule
 const configModuleOptions: ConfigModuleOptions = {
@@ -80,6 +81,7 @@ export class AppModule implements NestModule {
         session({
           store: new RedisStore({ client: this.redisClient }),
           secret: this.configService.get<string>('session.secret'),
+          rolling: this.configService.get<boolean>('session.rolling'),
           resave: this.configService.get<boolean>('session.resave'),
           saveUninitialized: this.configService.get<boolean>(
             'session.saveUninitialized'
@@ -93,6 +95,7 @@ export class AppModule implements NestModule {
               'production',
           },
         }),
+        MaxSessionExpirationMiddleware,
         passport.initialize(),
         passport.session()
       )
