@@ -6,7 +6,6 @@ import { Prisma, User } from '@prisma/client';
 
 /**
  * Repository for managing users in database.
- * Provides methods to create a user, retrieve one by email or ID, and to reset a password.
  */
 @Injectable()
 export class UsersRepository {

@@ -10,7 +10,6 @@ import { RequestObjectUserDto } from './dto/request-object-user.dto';
 
 /**
  * Service for managing users.
- * Provides methods for creating a user, retrieving one by email or id, hashing and resetting a password, and sanitizing a user.
  */
 @Injectable()
 export class UsersService {

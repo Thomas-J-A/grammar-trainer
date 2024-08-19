@@ -4,7 +4,6 @@ import { Prisma, PasswordResetToken } from '@prisma/client';
 
 /**
  * Repository for managing password reset tokens in database.
- * Provides methods to create a token, retrieve one by token string, or delete one.
  */
 @Injectable()
 export class PasswordResetTokensRepository {

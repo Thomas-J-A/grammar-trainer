@@ -3,7 +3,6 @@ import { MailerService as NestMailerService } from '@nestjs-modules/mailer';
 
 /**
  * Service for sending emails.
- * Provides a method for sending password reset links.
  */
 @Injectable()
 export class MailerService {
