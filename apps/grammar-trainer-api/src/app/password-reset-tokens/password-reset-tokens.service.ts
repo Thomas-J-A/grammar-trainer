@@ -4,7 +4,6 @@ import { PasswordResetTokensRepository } from './password-reset-tokens.repositor
 
 /**
  * Service for managing password reset tokens.
- * Provides methods for creating, finding, and deleting tokens.
  */
 @Injectable()
 export class PasswordResetTokensService {

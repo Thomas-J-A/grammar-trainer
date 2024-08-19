@@ -4,7 +4,6 @@ import { UsersService } from '../users/users.service';
 
 /**
  * Service responsible for serializing and deserializing user sessions.
- * Provides methods used by PassportJS to serialize and deserialize a user.
  */
 @Injectable()
 export class SessionSerializer extends PassportSerializer {

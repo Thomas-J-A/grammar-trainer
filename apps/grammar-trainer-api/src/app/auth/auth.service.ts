@@ -17,7 +17,6 @@ import { MAX_FAILED_LOGIN_ATTEMPTS, LOCKOUT_DURATION } from './auth.constants';
 
 /**
  * Service for handling authenication.
- * Provides methods for registering users, checking submitted credentials, requesting and handling password resets, and verifying passwords.
  */
 @Injectable()
 export class AuthService {
