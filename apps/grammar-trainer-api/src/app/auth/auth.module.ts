@@ -5,9 +5,11 @@ import { PasswordResetTokensModule } from '../password-reset-tokens/password-res
 import { MailerModule } from '../mailer/mailer.module';
 import { AuthService } from './auth.service';
 import { LocalStrategy } from './strategies/local.strategy';
+import { GoogleStrategy } from './strategies/google.strategy';
 import { SessionSerializer } from './session.serializer';
 import { AuthController } from './auth.controller';
 import { LoginValidationMiddleware } from './middleware/login-validation.middleware';
+import { GithubStrategy } from './strategies/github.strategy';
 
 @Module({
   imports: [
@@ -16,7 +18,13 @@ import { LoginValidationMiddleware } from './middleware/login-validation.middlew
     MailerModule,
     PassportModule.register({ session: true }),
   ],
-  providers: [AuthService, LocalStrategy, SessionSerializer],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    GoogleStrategy,
+    GithubStrategy,
+    SessionSerializer,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule implements NestModule {

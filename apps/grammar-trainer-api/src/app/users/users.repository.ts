@@ -14,7 +14,7 @@ export class UsersRepository {
   /**
    * Create a new user in the database.
    *
-   * @param {Prisma.UserCreateInput} data - The user data to create a new user.
+   * @param {Prisma.UserCreateInput} data - The data to create a new user.
    * @returns {Promise<User>} A promise that resolves to the created user.
    */
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
@@ -39,6 +39,25 @@ export class UsersRepository {
    */
   async findUserById(id: number): Promise<User | null> {
     return this.prisma.user.findUnique({ where: { id } });
+  }
+
+  /**
+   * Find user in database with corresponding provider id.
+   *
+   * @param {string} provider - The OAuth provider.
+   * @param {string} providerId - The personal ID given by the OAuth provider.
+   * @returns {Promise<User | null>} A promise that resolves to a user or null if not found.
+   */
+  async findUserByProviderId(
+    provider: 'google' | 'github',
+    providerId: string
+  ): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where:
+        provider === 'google'
+          ? { googleId: providerId }
+          : { githubId: providerId },
+    });
   }
 
   /**

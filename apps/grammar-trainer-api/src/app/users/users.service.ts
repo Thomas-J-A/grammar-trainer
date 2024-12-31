@@ -32,6 +32,34 @@ export class UsersService {
   }
 
   /**
+   * Create and store a new OAuth user in the database.
+   *
+   * @param {string} email - The user's email address.
+   * @param {string} provider - The OAuth provider (Google or GitHub).
+   * @param {string} providerId - The user's given ID from the provider.
+   * @returns {Promise<User>} A promise that resolves to the created user.
+   */
+  async createOauthUser(
+    email: string,
+    provider: 'google' | 'github',
+    providerId: string
+  ): Promise<User> {
+    if (provider === 'google') {
+      // Create a new Google user
+      return await this.usersRepository.createUser({
+        email,
+        googleId: providerId,
+      });
+    } else {
+      // Create a new GitHub user
+      return await this.usersRepository.createUser({
+        email,
+        githubId: providerId,
+      });
+    }
+  }
+
+  /**
    * Find user in database with corresponding email address.
    *
    * @param {string} email - The email to search by in database.
@@ -49,6 +77,23 @@ export class UsersService {
    */
   async findUserById(id: number): Promise<User | null> {
     return await this.usersRepository.findUserById(id);
+  }
+
+  /**
+   * Find user in database with corresponding provider id.
+   *
+   * @param {string} provider - The OAuth provider.
+   * @param {string} providerId - The personal ID given by the OAuth provider.
+   * @returns {Promise<User | null>} A promise that resolves to a user or null if not found.
+   */
+  async findUserByProviderId(
+    provider: 'google' | 'github',
+    providerId: string
+  ): Promise<User | null> {
+    return await this.usersRepository.findUserByProviderId(
+      provider,
+      providerId
+    );
   }
 
   /**

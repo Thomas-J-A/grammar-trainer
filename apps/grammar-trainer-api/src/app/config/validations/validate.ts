@@ -7,6 +7,7 @@ import { SessionVariables } from './session.validation';
 import { CacheVariables } from './cache.validation';
 import { DatabaseVariables } from './database.validation';
 import { MailVariables } from './mail.validation';
+import { OauthVariables } from './oauth.validation';
 
 /**
  * Validates the loaded environment variables.
@@ -45,6 +46,11 @@ export const validate = (config: Record<string, unknown>) => {
     enableImplicitConversion: true,
   });
 
+  const oauthVars = plainToInstance(OauthVariables, config, {
+    excludeExtraneousValues: true,
+    enableImplicitConversion: true,
+  });
+
   // Validate all envs
   const errors = [
     ...validateSync(environmentVars, {
@@ -71,13 +77,17 @@ export const validate = (config: Record<string, unknown>) => {
       skipMissingProperties: false,
       stopAtFirstError: true,
     }),
+    ...validateSync(oauthVars, {
+      skipMissingProperties: false,
+      stopAtFirstError: true,
+    }),
   ];
 
   if (errors.length > 0) {
     throw new InternalServerErrorException(errors.toString());
   }
 
-  // Return a new config object with correct typings
+  // Return a new, fully-typed, config object data structure
   const allVars = {
     ...environmentVars,
     ...httpVars,
@@ -85,6 +95,7 @@ export const validate = (config: Record<string, unknown>) => {
     ...cacheVars,
     ...databaseVars,
     ...mailVars,
+    ...oauthVars,
   };
 
   return allVars;

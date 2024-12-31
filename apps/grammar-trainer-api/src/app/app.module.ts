@@ -24,6 +24,7 @@ import sessionConfig from './config/configurations/session.config';
 import cacheConfig from './config/configurations/cache.config';
 import databaseConfig from './config/configurations/database.config';
 import mailConfig from './config/configurations/mail.config';
+import oauthConfig from './config/configurations/oauth.config';
 import { validate } from './config/validations/validate';
 import { MaxSessionExpirationMiddleware } from './global-middleware/max-session-expiration.middleware';
 
@@ -49,6 +50,7 @@ const configModuleOptions: ConfigModuleOptions = {
     cacheConfig,
     databaseConfig,
     mailConfig,
+    oauthConfig,
   ],
 };
 
@@ -88,7 +90,7 @@ export class AppModule implements NestModule {
           ),
           cookie: {
             maxAge: 300000, // TODO: get value from config - this.configService.get<number>('session.maxAge'). Currently a bug.
-            sameSite: true,
+            sameSite: 'lax', // Allow cookies on GET cross-site requests (OAuth server's redirecting to this API)
             httpOnly: true,
             secure:
               this.configService.get<string>('environment.mode') ===

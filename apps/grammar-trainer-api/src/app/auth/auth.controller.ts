@@ -17,6 +17,7 @@ import { AuthService } from './auth.service';
 import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { RequestObjectUserDto } from '../users/dto/request-object-user.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 /**
  * Controller for authentication-related routes.
@@ -48,6 +49,87 @@ export class AuthController {
 
     return {
       message: 'Login successful',
+      statusCode: HttpStatus.OK,
+      user,
+    };
+  }
+
+  // GET /google
+  @UseGuards(AuthGuard('google'))
+  @Get('/google')
+  redirectToGoogle() {
+    // Guard handles logic which creates redirect URL
+    // This handler is not called because Passport sends a redirect response before it is reached
+  }
+
+  // GET /google/callback
+  @UseGuards(AuthGuard('google'))
+  @Get('/google/callback')
+  async authWithGoogle(@Req() request: Request) {
+    // Add user to session object (first regenerates session, then calls passport.js's serializeUser method)
+    // Login method is Promisified since the session interaction is asynchronous
+    await new Promise<void>((resolve, reject) => {
+      request.logIn(request.user, (err) => {
+        if (err) {
+          reject(
+            new InternalServerErrorException(
+              'Unable to authorize user with Google'
+            )
+          );
+        }
+
+        resolve();
+      });
+    });
+
+    // Add 'createdAt' property to newly regenerated session
+    // This is necessary since this handler runs after MaxSessionExpirationMiddleware
+    request.session.createdAt = Date.now();
+
+    // Sanitize user object before sending in response
+    const user = this.authService.logIn(request.user as RequestObjectUserDto);
+
+    return {
+      message: 'Google authentication successful',
+      statusCode: HttpStatus.OK,
+      user,
+    };
+  }
+
+  // GET /github
+  @UseGuards(AuthGuard('github'))
+  @Get('/github')
+  redirectToGitHub() {
+    // Guard handles logic which creates redirect URL
+  }
+
+  // GET /github/callback
+  @UseGuards(AuthGuard('github'))
+  @Get('/github/callback')
+  async authWithGitHub(@Req() request: Request) {
+    // Add user to session
+    await new Promise<void>((resolve, reject) => {
+      request.logIn(request.user, (err) => {
+        if (err) {
+          reject(
+            new InternalServerErrorException(
+              'Unable to authorize user with GitHub'
+            )
+          );
+        }
+
+        resolve();
+      });
+    });
+
+    // Add 'createdAt' property to newly regenerated session
+    request.session.createdAt = Date.now();
+
+    // Sanitize user object before sending in response
+    const user = this.authService.logIn(request.user as RequestObjectUserDto);
+
+    return {
+      message: 'GitHub authentication successful',
       statusCode: HttpStatus.OK,
       user,
     };

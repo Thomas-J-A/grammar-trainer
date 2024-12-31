@@ -6,7 +6,7 @@ import { Request } from 'express';
  * Guard for implementing PassportJS authentication.
  *
  * AuthGuard is a special guard which kicks off the PassportJS authentication flow.
- * It calls verify cb (validate method), adds user to request object, and establishes session.
+ * It calls verify cb (validate method), adds user to request object, and establishes session (due to logIn method call).
  */
 Injectable();
 export class LocalAuthGuard extends AuthGuard('local') {

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 import { AuthService } from '../auth.service';
+import { RequestObjectUserDto } from '../../users/dto/request-object-user.dto';
 
 /**
  * Service responsible for implementing PassportJS's local strategy.
@@ -22,7 +23,10 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
    * @param {string} password - The submitted password.
    * @returns {Promise} A promise that resolves to a user object with some sensitive fields removed.
    */
-  async validate(email: string, password: string) {
+  async validate(
+    email: string,
+    password: string
+  ): Promise<RequestObjectUserDto> {
     const user = await this.authService.validateUser(email, password);
 
     // Return value added to request object as req.user

@@ -27,7 +27,7 @@ export class AuthService {
   ) {}
 
   /**
-   * Register a new user to the app.
+   * Register a traditional user in the db.
    *
    * @param {string} email - The user's email address.
    * @param {string} password - The user's password.
@@ -39,8 +39,21 @@ export class AuthService {
   ): Promise<SafeResponseUserDto> {
     // Verify that a user with same email doesn't already exist
     const existingUser = await this.usersService.findUserByEmail(email);
+
+    // If a user exists, check if it's an OAuth-based account
     if (existingUser) {
-      throw new ConflictException(`A user with email ${email} already exists`);
+      if (existingUser.googleId || existingUser.githubId) {
+        // Notify the user to log in with the original OAuth method
+        const registeredWith = existingUser.googleId ? 'Google' : 'GitHub';
+        throw new ConflictException(
+          `This email is already registered with ${registeredWith}. Please log in via ${registeredWith}.`
+        );
+      } else {
+        // Notify the user about an email clash
+        throw new ConflictException(
+          `A user with email ${email} already exists`
+        );
+      }
     }
 
     // Add new user to db
@@ -73,7 +86,7 @@ export class AuthService {
   /**
    * Validate submitted credentials against those stored in db.
    *
-   * Used by PassportJS when authenticating a user during login.
+   * Used by PassportJS when authenticating a user during login via traditional email/password.
    *
    * @param {string} email - The user's email address.
    * @param {string} password - The user's password.
@@ -124,6 +137,60 @@ export class AuthService {
       await this.usersService.lockAccount(userId, LOCKOUT_DURATION);
       throw new ForbiddenException('Account is locked. Try again later');
     }
+  }
+
+  /**
+   * Find or create an OAuth user in the db.
+   *
+   * Used by PassportJS when authenticating via OAuth.
+   *
+   * @param {object} userDetails - The user's email, OAuth provider name, and personal ID from provider.
+   * @returns {Promise<RequestObjectUserDto>} A promise that resolves to a user.
+   */
+  async findOrCreateOauthUser({
+    email,
+    provider,
+    providerId,
+  }: {
+    email: string;
+    provider: 'google' | 'github';
+    providerId: string;
+  }): Promise<RequestObjectUserDto> {
+    // Check if a user exists with the provided provider ID
+    let user = await this.usersService.findUserByProviderId(
+      provider,
+      providerId
+    );
+
+    // Check if the provided email is associated with another login method
+    // Note that not all providers provide an email in the returned profile info
+    if (!user && email) {
+      user = await this.usersService.findUserByEmail(email);
+
+      if (user) {
+        // Notify the user to authenticate with original login method
+        const registeredWith = user.googleId
+          ? 'Google'
+          : user.githubId
+          ? 'GitHub'
+          : 'email/password';
+        throw new ConflictException(
+          `This email is already registered with ${registeredWith}. Please log in via ${registeredWith}.`
+        );
+      }
+    }
+
+    // Create a new OAuth user with the current OAuth provider
+    if (!user) {
+      user = await this.usersService.createOauthUser(
+        email,
+        provider,
+        providerId
+      );
+    }
+
+    // Sanitize and return user
+    return this.usersService.sanitizeUserForRequestObject(user);
   }
 
   /**
